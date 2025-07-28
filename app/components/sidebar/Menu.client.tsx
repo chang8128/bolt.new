@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { Dialog, DialogButton, DialogDescription, DialogRoot, DialogTitle } from '~/components/ui/Dialog';
 import { IconButton } from '~/components/ui/IconButton';
 import { ThemeSwitch } from '~/components/ui/ThemeSwitch';
+import { PersonalityDialog } from './PersonalityDialog.client';
 import { db, deleteById, getAll, chatId, type ChatHistoryItem } from '~/lib/persistence';
 import { cubicEasingFn } from '~/utils/easings';
 import { logger } from '~/utils/logger';
@@ -38,6 +39,7 @@ export function Menu() {
   const [list, setList] = useState<ChatHistoryItem[]>([]);
   const [open, setOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState<DialogContent>(null);
+  const [personalityOpen, setPersonalityOpen] = useState(false);
 
   const loadEntries = useCallback(() => {
     if (db) {
@@ -163,9 +165,15 @@ export function Menu() {
             </Dialog>
           </DialogRoot>
         </div>
-        <div className="flex items-center border-t border-bolt-elements-borderColor p-4">
+        <div className="flex items-center border-t border-bolt-elements-borderColor p-4 gap-2">
+          <IconButton
+            icon="i-ph:smiley"
+            title="Edit Personality"
+            onClick={() => setPersonalityOpen(true)}
+          />
           <ThemeSwitch className="ml-auto" />
         </div>
+        <PersonalityDialog open={personalityOpen} onOpenChange={setPersonalityOpen} />
       </div>
     </motion.div>
   );
