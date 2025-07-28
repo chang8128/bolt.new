@@ -9,7 +9,10 @@ export async function action(args: ActionFunctionArgs) {
 }
 
 async function chatAction({ context, request }: ActionFunctionArgs) {
-  const { messages } = await request.json<{ messages: Messages }>();
+  const { messages, systemPrompt } = await request.json<{
+    messages: Messages;
+    systemPrompt?: string;
+  }>();
 
   const stream = new SwitchableStream();
 
@@ -32,13 +35,23 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
         messages.push({ role: 'assistant', content });
         messages.push({ role: 'user', content: CONTINUE_PROMPT });
 
-        const result = await streamText(messages, context.cloudflare.env, options);
+        const result = await streamText(
+          messages,
+          context.cloudflare.env,
+          options,
+          systemPrompt,
+        );
 
         return stream.switchSource(result.toAIStream());
       },
     };
 
-    const result = await streamText(messages, context.cloudflare.env, options);
+    const result = await streamText(
+      messages,
+      context.cloudflare.env,
+      options,
+      systemPrompt,
+    );
 
     stream.switchSource(result.toAIStream());
 
